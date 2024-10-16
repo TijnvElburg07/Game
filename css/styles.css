@@ -1,0 +1,75 @@
+/* Achtergrond van de pagina */
+body {
+    background-image: url(https://cdn.discordapp.com/attachments/1172274565049749535/1296031760479682571/image.png?ex=6710cf22&is=670f7da2&hm=414e90cf22d3c14b697b9ae75181773cb42446761980fe7a55ffbe7eef9eec17&);
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Container van het inlogscherm */
+.start {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    padding: 40px;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 248, 220, 0.85); /* Transparant beige */
+    background-size: cover;
+    border: 8px groove burlywood;
+    border-radius: 30px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Subtiele schaduw voor diepte */
+    gap: 20px;
+}
+
+/* Stijl van invoervelden */
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* Diepte in velden */
+    transition: all 0.3s ease;
+}
+
+/* Focus op invoervelden */
+input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: burlywood;
+    box-shadow: 0 0 8px rgba(210, 180, 140, 0.8);
+}
+
+/* Stijl van de knoppen */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: burlywood;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect op knoppen */
+button:hover {
+    background-color: #d2b48c;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobiele optimalisatie */
+@media (max-width: 600px) {
+    .start {
+        width: 90%;
+        padding: 20px;
+    }
+}
