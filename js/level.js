@@ -9,3 +9,22 @@ function getCookie(name) {
     return null;
 }
 
+
+function loadPage() {
+    const level = getCookie("level");
+    const btn = document.getElementById("btn");
+
+    btn.innerHTML = level;
+}
+
+function goTo(){
+    const level = getCookie("level");
+
+    if (level == 1){
+        window.location.href = "first.html";
+    } else if (level == 2){
+        window.location.href = "second.html";
+    } else if (level ==3){
+        window.location.href = "third.html";
+    }
+}
