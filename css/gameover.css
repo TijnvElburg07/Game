@@ -1,0 +1,49 @@
+body {
+    background-image: url(https://cdn.discordapp.com/attachments/1172274565049749535/1296031760479682571/image.png?ex=6710cf22&is=670f7da2&hm=414e90cf22d3c14b697b9ae75181773cb42446761980fe7a55ffbe7eef9eec17&);
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+h1{
+    text-align: center;
+    margin-top: 75px;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 5em; 
+}
+
+.Retry{
+    width: 150px;
+    margin-left: 380px;
+    margin-top: 350px;
+    background-color: black;
+    color: white;
+    font-size: 15px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+button:hover{
+    background-color: grey;
+}
+
+.Mainmenu{
+    width: 150px;
+    margin-left: 568px;
+    margin-top: 350px;
+    background-color: black;
+    color: white;
+    font-size: 15px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
