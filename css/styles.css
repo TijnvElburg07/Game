@@ -1,6 +1,6 @@
 /* Achtergrond van de pagina */
 body {
-    background-image: url(https://cdn.discordapp.com/attachments/1172274565049749535/1296031760479682571/image.png?ex=6710cf22&is=670f7da2&hm=414e90cf22d3c14b697b9ae75181773cb42446761980fe7a55ffbe7eef9eec17&);
+    background-image: url(../img/background.png);
     background-size: cover;
     background-position: center;
     margin: 0;

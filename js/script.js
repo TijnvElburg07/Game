@@ -35,6 +35,7 @@ function register() {
     // Simpele encoding van wachtwoord (gebruik nooit raw wachtwoorden in productie)
     let encodedPassword = btoa(password); // Versleutel wachtwoord met base64
     setCookie('password', encodedPassword, 7); // Bewaar 7 dagen
+    setCookie('level', 1, 7);
 
     alert("Registratiegegevens opgeslagen in cookies!");
 }
