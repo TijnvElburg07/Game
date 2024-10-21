@@ -14,6 +14,7 @@ function loadPage() {
     const level = getCookie("level");
     const btn = document.getElementById("btn");
 
+    console.log(level);
     btn.innerHTML = level;
 }
 
