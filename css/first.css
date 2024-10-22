@@ -1,5 +1,15 @@
+/* Ensure there is no margin or padding on the body to avoid scrollbars */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent any overflow that could cause scrolling */
+}
+
+/* Canvas styling */
 canvas {
     background-color: #eaeaea;
     display: block;
     margin: 0 auto;
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
 }
