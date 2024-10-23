@@ -1,5 +1,29 @@
+let canLeave = false;
+let levelIncremented = false;
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        let date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
 
 // Resize the canvas to fill the screen
 function resizeCanvas() {
@@ -29,9 +53,15 @@ quincyImage.src = 'img/quincy.png';
 const buttonImage = new Image();
 buttonImage.src = 'img/button.png'; 
 
+const keyImage = new Image();
+keyImage.src = 'img/key.png'; // Path to your key image
+
 // Load agent image
 const agentImage = new Image();
 agentImage.src = 'img/agent.png';  // Replace with your agent image path
+
+const doorImage = new Image();
+doorImage.src = 'img/door.png';
 
 // Ensure all images load before starting the game
 let imagesLoaded = 0;
@@ -109,12 +139,24 @@ const platforms = [
     { xPercent: 0.0, yPercent: 0.12, widthPercent: 0.2, heightPercent: 0.08 },
     { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
     { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
-    { xPercent: 0.50, yPercent: 0.0, widthPercent: 0.02, heightPercent: 0.40 }
-    
 ];
 
 
+const key = {
+    x: 20,
+    y: 20,
+    width: 50,
+    height: 50, 
+    collected: false
+};
 
+const door = {
+    x: canvas.width - 100, // Position from the right
+    y: canvas.height - 100, // Position from the bottom
+    width: 80,
+    height: 100,
+    opened: false // To track if the door is opened or not
+};
 
 
 // Key press status
@@ -146,6 +188,19 @@ function drawPlatforms() {
 function drawPlatform(x, y, width, height) {
     ctx.drawImage(platformImage, x, y, width, height);
 }
+
+function drawKey() {
+    if (!key.collected) { // Only draw if the key is not collected
+        ctx.drawImage(keyImage, key.x, key.y, key.width, key.height);
+    }
+}
+
+function drawDoor() {
+    if (!door.opened) {
+        ctx.drawImage(doorImage, door.x, door.y, door.width, door.height);
+    }
+}
+
 
 // Function to draw players
 function drawPlayer(player, image) {
@@ -276,6 +331,32 @@ function updatePlayer(player, keysRight, keysLeft, keysUp) {
     }
 }
 
+function checkKeyCollision(player) {
+    if (
+        player.x < key.x + key.width &&
+        player.x + player.width > key.x &&
+        player.y < key.y + key.height &&
+        player.y + player.height > key.y
+    ) {
+        key.collected = true; // Mark the key as collected
+        return true; // Return true to indicate the key was picked up
+    }
+    return false; // Return false if the key was not collected
+}
+
+function checkDoorCollision(player) {
+    if (
+        player.x < door.x + door.width &&
+        player.x + player.width > door.x &&
+        player.y < door.y + door.height &&
+        player.y + player.height > door.y
+    ) {
+        return true; // The player has collided with the door
+    }
+    return false; // No collision
+}
+
+
 function resetGame() {
     // Reset player positions
     player1.x = 100;
@@ -296,7 +377,7 @@ function resetGame() {
     agent.direction = 1; 
 
     // Reset agent's field of view position
-    agent.fieldOfView.x = agent.x + agent.width;
+    agent.fieldOfView.x = agent.x + agent.width ;
     agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2);
 
     // Reset any other game variables as necessary
@@ -342,54 +423,69 @@ function clearCanvas() {
 }
 
 // Main game loop
+// Main game loop
 function gameLoop() {
     clearCanvas();
 
-    // Draw background first
     drawBackground();
-
-    // Draw platforms next
     drawPlatforms();
-
-    // Draw the agent
     drawAgent();
+    drawKey(); // Draw the key
+    drawDoor(); // Draw the door
 
-    // Update players and draw them on top
     updatePlayer(player1, keys.right1, keys.left1, keys.up1);
     updatePlayer(player2, keys.right2, keys.left2, keys.up2);
     drawPlayer(player1, playerImage);
     drawPlayer(player2, quincyImage);
 
+    // Check collision with the key
+    if (checkKeyCollision(player1) || checkKeyCollision(player2)) {
+        canLeave = true; // Set canLeave to true if either player collects the key
+    }
 
+    // Check collision with the door
+    if (canLeave && !levelIncremented) { // Check if level hasn't been incremented
+        if (checkDoorCollision(player1) || checkDoorCollision(player2)) {
+            let level = parseInt(getCookie('level')) || 0; // Ensure to get the level as a number
+            level += 1; // Increment level
+            console.log(level);
+            setCookie('level', level, 7); // Set the new level in cookie
+            levelIncremented = true; // Set flag to true after incrementing level
+            window.location.href = "levels.html"; // Redirect to levels page
+        }
+    }
 
+    // Reset canLeave and levelIncremented after checking for door collision
+    if (!checkDoorCollision(player1) && !checkDoorCollision(player2)) {
+        levelIncremented = false; // Reset the flag if neither player is at the door
+    }
 
     // Check collision with agent's field of vision
     if (checkAgentCollision(player1)) {
         window.location.href = "gameover.html";
-        resetGame(); // Call reset function after alert
+        resetGame(); 
     }
     if (checkAgentCollision(player2)) {
         window.location.href = "gameover.html";
-        resetGame(); // Call reset function after alert
+        resetGame(); 
     }
 
-    // Update agent position to make it move back and forth
+    // Update agent position
     agent.x += agent.speed * agent.direction;
 
-    // Reverse direction if hitting canvas bounds
+    // Check for agent boundaries
     if (agent.x < 0 || agent.x + agent.width > canvas.width) {
-        agent.direction *= -1; // Reverse direction
+        agent.direction *= -1; 
     }
 
-    // Update the agent's field of view position to be in front of the agent
-    agent.fieldOfView.x = agent.x + agent.width; // Position FOV in front of the agent
-    agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2); // Center it vertically
-
-    
+    agent.fieldOfView.x = agent.x + agent.width; 
+    agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2); 
 
     requestAnimationFrame(gameLoop);
-    drawButton();
 }
+
+
+
 // Event listeners for key presses
 document.addEventListener("keydown", (event) => {
 
