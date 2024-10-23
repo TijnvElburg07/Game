@@ -59,7 +59,7 @@ const player1 = {
     y: canvas.height - 100,
     width: 75,
     height: 90,
-    speed: 5,
+    speed: 3,
     dx: 0,
     dy: 0,
     gravity: 0.5,
@@ -73,7 +73,7 @@ const player2 = {
     y: canvas.height - 100,
     width: 75,
     height: 90,
-    speed: 5,
+    speed: 3,
     dx: 0,
     dy: 0,
     gravity: 0.5,
@@ -108,7 +108,8 @@ const platforms = [
     { xPercent: 0.20, yPercent: 0.38, widthPercent: 0.1, heightPercent: 0.03 },
     { xPercent: 0.0, yPercent: 0.12, widthPercent: 0.2, heightPercent: 0.08 },
     { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
-    { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 }
+    { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
+    { xPercent: 0.50, yPercent: 0.0, widthPercent: 0.02, heightPercent: 0.40 }
     
 ];
 
@@ -208,6 +209,13 @@ function drawAgent() {
 // Function to draw the button
 function drawButton() {
     ctx.drawImage(buttonImage, button.x, button.y, button.width, button.height);
+    button.forEach(button => {
+        const x = button.xPercent * canvas.width;
+        const y = button.yPercent * canvas.height;
+        const width = button.widthPercent * canvas.width;
+        const height = button.heightPercent * canvas.height;
+        drawButton(x, y, width, height);
+    });
 }
 
 // Function to handle movement and gravity for a player
@@ -353,6 +361,8 @@ function gameLoop() {
     drawPlayer(player2, quincyImage);
 
 
+
+
     // Check collision with agent's field of vision
     if (checkAgentCollision(player1)) {
         window.location.href = "gameover.html";
@@ -375,7 +385,10 @@ function gameLoop() {
     agent.fieldOfView.x = agent.x + agent.width; // Position FOV in front of the agent
     agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2); // Center it vertically
 
+    
+
     requestAnimationFrame(gameLoop);
+    drawButton();
 }
 // Event listeners for key presses
 document.addEventListener("keydown", (event) => {
