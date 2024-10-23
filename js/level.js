@@ -20,11 +20,15 @@ function loadPage() {
 function goTo(){
     const level = getCookie("level");
 
-    if (level == 1){
-        window.location.href = "first.html";
-    } else if (level == 2){
-        window.location.href = "second.html";
-    } else if (level ==3){
-        window.location.href = "third.html";
+    switch(level) {
+        case '1':
+            window.location.href = "first.html";
+            break;
+        case '2':
+            window.location.href = "second.html";
+            break;
+        case '3':
+            window.location.href = "third.html";
+            break;
     }
 }
