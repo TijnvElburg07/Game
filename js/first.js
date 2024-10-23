@@ -26,13 +26,16 @@ playerImage.src = 'img/anton.png';
 const quincyImage = new Image();
 quincyImage.src = 'img/quincy.png';
 
+const buttonImage = new Image();
+buttonImage.src = 'img/button.png'; 
+
 // Load agent image
 const agentImage = new Image();
 agentImage.src = 'img/agent.png';  // Replace with your agent image path
 
 // Ensure all images load before starting the game
 let imagesLoaded = 0;
-const totalImages = 5; // Updated total images to include the agent
+const totalImages = 6; // Updated total images to include the agent
 
 // Function to check if all images are loaded
 function imageLoaded() {
@@ -48,6 +51,7 @@ platformImage.onload = imageLoaded;
 playerImage.onload = imageLoaded;
 quincyImage.onload = imageLoaded;
 agentImage.onload = imageLoaded; // Add agent image loading check
+buttonImage.onload = imageLoaded;
 
 // Player settings
 const player1 = {
@@ -87,15 +91,27 @@ const agent = {
         height: 50             // Height of the field of vision
     },
     direction: 1,              // 1 for right, -1 for left
-    speed: 1                    // Agent's speed
+    speed: 4                    // Agent's speed
 };
 
 // Platform settings
 const platforms = [
     { xPercent: 0.7, yPercent: 0.85, widthPercent: 0.1, heightPercent: 0.03 },
-    { xPercent: 0.15, yPercent: 0.3, widthPercent: 0.2, heightPercent: 0.05 },
-    { xPercent: 0.35, yPercent: 0.2, widthPercent: 0.2, heightPercent: 0.05 }
+    { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
+    { xPercent: 0.22, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
+    { xPercent: 0.40, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
+    { xPercent: 0.85, yPercent: 0.75, widthPercent: 0.1, heightPercent: 0.03 },
+    { xPercent: 0.7, yPercent: 0.6, widthPercent: 0.1, heightPercent: 0.03 },
+    { xPercent: 0.20, yPercent: 0.38, widthPercent: 0.1, heightPercent: 0.03 },
+    { xPercent: 0.0, yPercent: 0.12, widthPercent: 0.2, heightPercent: 0.08 },
+    { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 },
+    { xPercent: 0.04, yPercent: 0.40, widthPercent: 0.2, heightPercent: 0.05 }
+    
 ];
+
+
+
+
 
 // Key press status
 let keys = {
@@ -139,6 +155,11 @@ function drawAgent() {
     // Draw the field of vision (for visualization)
     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)'; // Red color for visibility
     ctx.fillRect(agent.fieldOfView.x, agent.fieldOfView.y, agent.fieldOfView.width, agent.fieldOfView.height);
+}
+
+// Function to draw the button
+function drawButton() {
+    ctx.drawImage(buttonImage, button.x, button.y, button.width, button.height);
 }
 
 // Function to handle movement and gravity for a player
@@ -241,6 +262,7 @@ function clearCanvas() {
 // Main game loop
 function gameLoop() {
     clearCanvas();
+    
 
     // Draw background first
     drawBackground();
@@ -250,6 +272,8 @@ function gameLoop() {
 
     // Draw the agent
     drawAgent();
+
+    
 
     // Update players and draw them on top
     updatePlayer(player1, keys.right1, keys.left1, keys.up1);
