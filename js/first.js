@@ -233,8 +233,9 @@ function resetGame() {
     player2.isJumping = false;
 
     // Reset agent position if needed (optional)
-    agent.x = 700;
-    agent.y = 858;
+    agent.x = 500;
+    agent.y = canvas.height - 100; 
+    agent.direction = 1; 
 
     // Reset agent's field of view position
     agent.fieldOfView.x = agent.x + agent.width;
@@ -283,11 +284,11 @@ function gameLoop() {
 
     // Check collision with agent's field of vision
     if (checkAgentCollision(player1)) {
-        alert("Anton is gepakt. GAME OVER!");
+        window.location.href = "gameover.html";
         resetGame(); // Call reset function after alert
     }
     if (checkAgentCollision(player2)) {
-        alert("Quincy is gepakt. GAME OVER!");
+        window.location.href = "gameover.html";
         resetGame(); // Call reset function after alert
     }
 
