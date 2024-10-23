@@ -78,8 +78,8 @@ const player2 = {
 
 // Agent settings
 const agent = {
-    x: 700, // Set the initial x position of the agent
-    y: 858, // Set the initial y position of the agent
+    x: 500, // Set the initial x position of the agent
+    y: canvas.height - 100, // Set the initial y position of the agent
     width: 100,                // Width of the agent's visible area
     height: 100,               // Height of the agent's visible area
     fieldOfView: {             // Field of vision settings
