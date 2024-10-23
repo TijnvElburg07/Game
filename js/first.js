@@ -64,7 +64,8 @@ const player1 = {
     dy: 0,
     gravity: 0.5,
     jumpPower: -12,
-    isJumping: false
+    isJumping: false,
+    direction: 1 // 1 for right, -1 for left
 };
 
 const player2 = {
@@ -77,22 +78,24 @@ const player2 = {
     dy: 0,
     gravity: 0.5,
     jumpPower: -12,
-    isJumping: false
+    isJumping: false,
+    direction: 1 // 1 for right, -1 for left
 };
 
-// Agent settings
+// Agent settings (already has direction property)
 const agent = {
-    x: 500, // Set the initial x position of the agent
-    y: canvas.height - 100, // Set the initial y position of the agent
-    width: 100,                // Width of the agent's visible area
-    height: 100,               // Height of the agent's visible area
-    fieldOfView: {             // Field of vision settings
-        width: 250,            // Width of the field of vision
-        height: 50             // Height of the field of vision
+    x: 500,
+    y: canvas.height - 100,
+    width: 100,
+    height: 100,
+    fieldOfView: {
+        width: 250,
+        height: 50
     },
-    direction: 1,              // 1 for right, -1 for left
-    speed: 4                    // Agent's speed
+    direction: 1,
+    speed: 1  
 };
+
 
 // Platform settings
 const platforms = [
@@ -145,17 +148,62 @@ function drawPlatform(x, y, width, height) {
 
 // Function to draw players
 function drawPlayer(player, image) {
-    ctx.drawImage(image, player.x, player.y, player.width, player.height);
+    ctx.save(); // Save the current state
+
+    if (player.direction === -1) {
+        // Flip horizontally if facing left
+        ctx.scale(-1, 1);
+        ctx.drawImage(image, -player.x - player.width, player.y, player.width, player.height);
+    } else {
+        // Draw normally if facing right
+        ctx.drawImage(image, player.x, player.y, player.width, player.height);
+    }
+
+    ctx.restore();
 }
 
 // Function to draw the agent
 function drawAgent() {
-    ctx.drawImage(agentImage, agent.x, agent.y, agent.width, agent.height);
+    ctx.save(); // Save the current state
+
+    // Set the position of the agent image based on direction
+    let agentDrawX = agent.x;
     
-    // Draw the field of vision (for visualization)
-    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)'; // Red color for visibility
-    ctx.fillRect(agent.fieldOfView.x, agent.fieldOfView.y, agent.fieldOfView.width, agent.fieldOfView.height);
+    // If the agent is facing left, flip the context
+    if (agent.direction === -1) {
+        ctx.scale(-1, 1);
+        agentDrawX = -agent.x - agent.width; // Adjust X for left-facing agent
+    }
+
+    // Draw the agent image at the calculated position
+    ctx.drawImage(agentImage, agentDrawX, agent.y, agent.width, agent.height);
+    
+    ctx.restore(); // Restore the original state
+
+    // Draw the field of vision as a cone
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Red color with some transparency
+    ctx.beginPath();
+
+    // The starting point of the cone (at the agent's front)
+    let coneStartX = agent.x + 55; // Adjust based on direction
+    let coneStartY = agent.y + 30; // Adjust height for starting point
+
+    // Calculate the end points based on the direction the agent is facing
+    let coneEndX = coneStartX + agent.fieldOfView.width * agent.direction;
+    let coneEndYTop = coneStartY - agent.fieldOfView.height / 2;
+    let coneEndYBottom = coneStartY + agent.fieldOfView.height / 2;
+
+    // Draw the triangular cone shape
+    ctx.moveTo(coneStartX, coneStartY); // Starting point at the agent
+    ctx.lineTo(coneEndX, coneEndYTop); // Top point of the cone
+    ctx.lineTo(coneEndX, coneEndYBottom); // Bottom point of the cone
+    ctx.closePath();
+
+    // Fill the cone shape
+    ctx.fill();
 }
+
+
 
 // Function to draw the button
 function drawButton() {
@@ -167,8 +215,10 @@ function updatePlayer(player, keysRight, keysLeft, keysUp) {
     // Move left and right
     if (keysRight) {
         player.dx = player.speed;
+        player.direction = 1; // Facing right
     } else if (keysLeft) {
         player.dx = -player.speed;
+        player.direction = -1; // Facing left
     } else {
         player.dx = 0;
     }
@@ -244,16 +294,39 @@ function resetGame() {
     // Reset any other game variables as necessary
 }
 
-// Function to check collision with the agent's visible area
-function checkAgentCollision(player) {
-    if (player.x < agent.fieldOfView.x + agent.fieldOfView.width &&
-        player.x + player.width > agent.fieldOfView.x &&
-        player.y < agent.fieldOfView.y + agent.fieldOfView.height &&
-        player.y + player.height > agent.fieldOfView.y) {
-        return true; // Player is affected by the agent
-    }
-    return false; // No collision
+// Function to check collision with the agent's visible area// Function to check if a point is inside a triangle
+function isPointInTriangle(px, py, ax, ay, bx, by, cx, cy) {
+    const areaOrig = Math.abs((ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) / 2.0);
+    const area1 = Math.abs((px * (by - cy) + bx * (cy - py) + cx * (py - by)) / 2.0);
+    const area2 = Math.abs((ax * (py - cy) + px * (cy - ay) + cx * (ay - py)) / 2.0);
+    const area3 = Math.abs((ax * (by - py) + bx * (py - ay) + px * (ay - by)) / 2.0);
+    return (area1 + area2 + area3 === areaOrig);
 }
+
+// Function to check if a player is within the agent's triangular field of vision
+function checkAgentCollision(player) {
+    // The starting point of the cone (at the agent's front)
+    let coneStartX = agent.x + agent.width / 2;
+    let coneStartY = agent.y + agent.height / 2;
+
+    // Calculate the end points based on the direction the agent is facing
+    let coneEndX = coneStartX + agent.fieldOfView.width * agent.direction;
+    let coneEndYTop = coneStartY - agent.fieldOfView.height / 2;
+    let coneEndYBottom = coneStartY + agent.fieldOfView.height / 2;
+
+    // Check if the player's position is within the triangle
+    const playerCenterX = player.x + player.width / 2;
+    const playerCenterY = player.y + player.height / 2;
+
+    // Use the isPointInTriangle function to check if the player's center point is inside the triangle
+    return isPointInTriangle(
+        playerCenterX, playerCenterY,    // Player's position
+        coneStartX, coneStartY,          // Cone start (agent's front)
+        coneEndX, coneEndYTop,           // Top of the cone
+        coneEndX, coneEndYBottom         // Bottom of the cone
+    );
+}
+
 
 // Function to clear the canvas for each frame
 function clearCanvas() {
@@ -263,7 +336,6 @@ function clearCanvas() {
 // Main game loop
 function gameLoop() {
     clearCanvas();
-    
 
     // Draw background first
     drawBackground();
@@ -274,13 +346,12 @@ function gameLoop() {
     // Draw the agent
     drawAgent();
 
-    
-
     // Update players and draw them on top
     updatePlayer(player1, keys.right1, keys.left1, keys.up1);
     updatePlayer(player2, keys.right2, keys.left2, keys.up2);
     drawPlayer(player1, playerImage);
     drawPlayer(player2, quincyImage);
+
 
     // Check collision with agent's field of vision
     if (checkAgentCollision(player1)) {
