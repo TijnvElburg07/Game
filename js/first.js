@@ -377,7 +377,7 @@ function resetGame() {
     agent.direction = 1; 
 
     // Reset agent's field of view position
-    agent.fieldOfView.x = agent.x + agent.width ;
+    agent.fieldOfView.x = agent.x + agent.width;
     agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2);
 
     // Reset any other game variables as necessary
@@ -451,7 +451,10 @@ function gameLoop() {
             console.log(level);
             setCookie('level', level, 7); // Set the new level in cookie
             levelIncremented = true; // Set flag to true after incrementing level
-            window.location.href = "levels.html"; // Redirect to levels page
+            setTimeout(() => {
+                window.location.href = "levels.html"; // Redirect to levels page
+            },500); // Delay for 0.5 second 
+            
         }
     }
 
