@@ -444,33 +444,26 @@ function gameLoop() {
     }
 
     // Check collision with the door
-    if (canLeave && !levelIncremented) { // Check if level hasn't been incremented
+    if (canLeave) {
         if (checkDoorCollision(player1) || checkDoorCollision(player2)) {
-            let level = parseInt(getCookie('level')) || 0; // Ensure to get the level as a number
-            level += 1; // Increment level
-            console.log(level);
-            setCookie('level', level, 7); // Set the new level in cookie
-            levelIncremented = true; // Set flag to true after incrementing level
-            setTimeout(() => {
-                window.location.href = "levels.html"; // Redirect to levels page
-            },500); // Delay for 0.5 second 
-            
+            if (!levelIncremented) { // Increment the level only if it hasn't been incremented
+                let currentLevel = parseInt(getCookie("level")) === 1; // Get current level
+                setCookie("level", 2, 7); // Increment the level
+                levelIncremented = true; // Set the flag to true after incrementing
+            }
+            window.location.href = "levels.html"; // Redirect to the levels page
         }
     }
 
-    // Reset canLeave and levelIncremented after checking for door collision
+    // Reset the level increment flag and canLeave if neither player is at the door
     if (!checkDoorCollision(player1) && !checkDoorCollision(player2)) {
-        levelIncremented = false; // Reset the flag if neither player is at the door
+        levelIncremented = false;
     }
 
     // Check collision with agent's field of vision
-    if (checkAgentCollision(player1)) {
+    if (checkAgentCollision(player1) || checkAgentCollision(player2)) {
         window.location.href = "gameover.html";
-        resetGame(); 
-    }
-    if (checkAgentCollision(player2)) {
-        window.location.href = "gameover.html";
-        resetGame(); 
+        resetGame();
     }
 
     // Update agent position
@@ -478,14 +471,16 @@ function gameLoop() {
 
     // Check for agent boundaries
     if (agent.x < 0 || agent.x + agent.width > canvas.width) {
-        agent.direction *= -1; 
+        agent.direction *= -1;
     }
 
-    agent.fieldOfView.x = agent.x + agent.width; 
-    agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2); 
+    // Update agent's field of vision position
+    agent.fieldOfView.x = agent.x + agent.width;
+    agent.fieldOfView.y = agent.y + (agent.height / 2) - (agent.fieldOfView.height / 2);
 
     requestAnimationFrame(gameLoop);
 }
+
 
 
 
