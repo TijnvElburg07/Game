@@ -30,6 +30,13 @@ function register() {
         return;
     }
 
+    if (username.length || password.length > 25) {
+        alert("Input mag niet langer zijn dan 25 tekens!");
+        return;
+    }
+
+    
+
     // Gegevens opslaan in cookies
     setCookie('username', username, 7); // Bewaar 7 dagen
     // Simpele encoding van wachtwoord (gebruik nooit raw wachtwoorden in productie)
