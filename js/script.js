@@ -30,7 +30,7 @@ function register() {
         return;
     }
 
-    if (username.length || password.length > 25) {
+    if (username.length > 25 || password.length > 25) {
         alert("Input mag niet langer zijn dan 25 tekens!");
         return;
     }
